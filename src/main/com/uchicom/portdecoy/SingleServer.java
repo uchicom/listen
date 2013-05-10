@@ -1,7 +1,7 @@
 /**
  * (c) 2013 uchicom
  */
-package com.uchicom.otoridori;
+package com.uchicom.portdecoy;
 
 import java.io.BufferedReader;
 import java.io.File;

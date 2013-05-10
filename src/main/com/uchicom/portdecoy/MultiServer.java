@@ -1,7 +1,7 @@
 /**
- * (c) 2013 uchicom
+ * (c) 2012 uchicom
  */
-package com.uchicom.otoridori;
+package com.uchicom.portdecoy;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -9,14 +9,14 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
- * @author uchicom: Shigeki Uchiyama
+ * @author Uchiyama Shigeki
  *
  */
-public class PoolServer extends SingleServer implements Runnable {
+public class MultiServer extends SingleServer implements Runnable {
+
+    
     /**
      * メイン処理.
      * 
@@ -40,15 +40,10 @@ public class PoolServer extends SingleServer implements Runnable {
         if (args.length == 3) {
             back = Integer.parseInt(args[3]);
         }
-        // スレッドプール数
-        int pool = 10;
-        if (args.length > 4) {
-            pool = Integer.parseInt(args[3]);
-        }
-        execute(file, port, back, pool);
+        execute(file, port, back);
 
-       
     }
+    
 
     /**
      * 
@@ -57,8 +52,7 @@ public class PoolServer extends SingleServer implements Runnable {
      * @param port
      * @param back
      */
-    private static void execute(File file, int port, int back, int pool) {
-        ExecutorService exec = null;
+    private static void execute(File file, int port, int back) {
         FileOutputStream fos = null;
         ServerSocket server = null;
         try {
@@ -67,12 +61,10 @@ public class PoolServer extends SingleServer implements Runnable {
             server.setReuseAddress(true);
             server.bind(new InetSocketAddress(port), back);
             serverQueue.add(server);
-
-            exec = Executors.newFixedThreadPool(pool);
             while (true) {
                 Socket socket = server.accept();
                 MultiServer decoy = new MultiServer(port, fos, socket);
-                exec.execute(decoy);
+                new Thread(decoy).start();
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -101,11 +93,12 @@ public class PoolServer extends SingleServer implements Runnable {
             }
         }
     }
-
-
-    public PoolServer(int port, FileOutputStream fos, Socket socket) {
+    
+    public MultiServer(int port, FileOutputStream fos, Socket socket) {
         super(port, fos, socket);
     }
+    
+
     /* (non-Javadoc)
      * @see java.lang.Runnable#run()
      */
