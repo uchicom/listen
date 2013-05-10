@@ -40,8 +40,8 @@ public class SingleServer {
      * @param args
      */
     public static void main(String[] args) {
-        if (args.length != 2) {
-            System.out.println("args.length != 2");
+        if (args.length < 2) {
+            System.out.println("args.length < 2");
             return;
         }
         // アクセスログ出力ファイル
@@ -49,13 +49,13 @@ public class SingleServer {
 
         // ポート
         int port = 0;
-        if (args.length > 2) {
-            port = Integer.parseInt(args[2]);
+        if (args.length > 1) {
+            port = Integer.parseInt(args[1]);
         }
         // 接続待ち数
         int back = 10;
-        if (args.length == 3) {
-            back = Integer.parseInt(args[3]);
+        if (args.length > 2) {
+            back = Integer.parseInt(args[2]);
         }
         execute(file, port, back);
 
